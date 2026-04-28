@@ -13,6 +13,15 @@ class HomeController extends Controller
 {
     public function index()
     {
+        $spotlight = Cache::remember('spotlight_anime', 600, fn () =>
+            Anime::with(['photo', 'studio', 'genres'])
+                ->withAvg(['reviews as avg_rating' => fn ($q) => $q->where('is_active', true)], 'rate')
+                ->withCount(['episodes' => fn ($q) => $q->where('is_active', true)])
+                ->orderBy('views', 'desc')
+                ->limit(6)
+                ->get()
+        );
+
         $trendingAnime = Cache::remember('trending_anime', 600, fn () =>
             Anime::with(['photo', 'studio', 'genres'])
                 ->withAvg(['reviews as avg_rating' => fn ($q) => $q->where('is_active', true)], 'rate')
@@ -91,7 +100,7 @@ class HomeController extends Controller
         ]);
 
         return view('home', compact(
-            'trendingAnime', 'genres', 'studios', 'quote',
+            'spotlight', 'trendingAnime', 'genres', 'studios', 'quote',
             'airingAnime', 'recentlyViewed', 'recommendations', 'stats'
         ));
     }

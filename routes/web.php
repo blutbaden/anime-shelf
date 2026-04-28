@@ -15,6 +15,7 @@ use App\Http\Controllers\StudiosController;
 use App\Http\Controllers\SubscriberController;
 use App\Http\Controllers\TagsController;
 use App\Http\Controllers\UsersController;
+use App\Http\Controllers\EpisodeController;
 use App\Http\Controllers\WatchHistoryController;
 use App\Http\Controllers\WatchListController;
 use App\Http\Controllers\Auth\SocialAuthController;
@@ -39,7 +40,8 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::middleware(['throttle:browse'])->group(function () {
     Route::get('/anime', [AnimeController::class, 'animes'])->name('animes');
     Route::post('/anime', [AnimeController::class, 'animes'])->name('animes-filtered');
-    Route::get('/anime/{id}', [AnimeController::class, 'anime'])->name('anime');
+    Route::get('/anime/{anime}', [AnimeController::class, 'anime'])->name('anime');
+    Route::get('/anime/{anime}/watch/{episode}', [EpisodeController::class, 'watch'])->name('episode.watch');
     Route::get('/genres', [GenresController::class, 'publicIndex'])->name('genres.public');
     Route::get('/studios', [StudiosController::class, 'studios'])->name('studios.public');
     Route::get('/studio/{id}', [StudiosController::class, 'studio'])->name('studio.public');
@@ -149,6 +151,14 @@ Route::middleware('admin')->group(function () {
     Route::get('admin/audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index');
     Route::get('admin/audit-logs/export/csv', [AuditLogController::class, 'export'])->name('audit-logs.export.csv');
     Route::get('admin/audit-logs/export/pdf', [AuditLogController::class, 'exportPdf'])->name('audit-logs.export.pdf');
+
+    // Episodes
+    Route::get('admin/animes/{anime}/episodes', [EpisodeController::class, 'index'])->name('episodes.index');
+    Route::get('admin/animes/{anime}/episodes/create', [EpisodeController::class, 'create'])->name('episodes.create');
+    Route::post('admin/animes/{anime}/episodes', [EpisodeController::class, 'store'])->name('episodes.store');
+    Route::get('admin/animes/{anime}/episodes/{episode}/edit', [EpisodeController::class, 'edit'])->name('episodes.edit');
+    Route::patch('admin/animes/{anime}/episodes/{episode}', [EpisodeController::class, 'update'])->name('episodes.update');
+    Route::delete('admin/animes/{anime}/episodes/{episode}', [EpisodeController::class, 'destroy'])->name('episodes.destroy');
 
     // Jikan import
     Route::get('admin/jikan', [JikanImportController::class, 'index'])->name('jikan.index');

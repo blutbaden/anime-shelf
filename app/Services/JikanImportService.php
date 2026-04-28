@@ -14,10 +14,12 @@ use Illuminate\Support\Str;
 class JikanImportService
 {
     private Client $httpClient;
+    private JikanService $jikan;
 
-    public function __construct()
+    public function __construct(JikanService $jikan)
     {
         $this->httpClient = new Client(['timeout' => 20]);
+        $this->jikan      = $jikan;
     }
 
     /**
@@ -59,6 +61,14 @@ class JikanImportService
             $anime = $existing;
         } else {
             $anime = Anime::create($animeData);
+        }
+
+        // Auto-detect seasons from Jikan relations (sequels = additional seasons)
+        if ($anime->seasons === null) {
+            $seasons = $this->jikan->fetchSeasonsCount($data['mal_id']);
+            if ($seasons !== null) {
+                $anime->update(['seasons' => $seasons]);
+            }
         }
 
         // Cover image
@@ -176,7 +186,7 @@ class JikanImportService
 
             $ext      = pathinfo(parse_url($url, PHP_URL_PATH), PATHINFO_EXTENSION) ?: 'jpg';
             $filename = Str::uuid() . '.' . $ext;
-            $destDir  = public_path('images/anime');
+            $destDir  = storage_path('app/public');
 
             if (! is_dir($destDir)) {
                 mkdir($destDir, 0755, true);

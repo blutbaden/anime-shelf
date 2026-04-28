@@ -1,7 +1,13 @@
 @extends('layouts.app')
 
-@section('title', $anime->title)
+@section('title', $anime->title . ' — ' . config('app.name'))
 @section('meta_description', $anime->meta_description ?: Str::limit($anime->synopsis, 160))
+@section('og_title', $anime->title . ' — ' . config('app.name'))
+@section('og_type', 'video.tv_show')
+@section('canonical', route('anime', $anime->slug ?? $anime->id))
+@if($anime->photo)
+@section('og_image', asset('storage/' . $anime->photo->file))
+@endif
 
 @section('content')
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -30,6 +36,15 @@
                 @endif
             </div>
 
+            {{-- Watch Episodes button --}}
+            @if($anime->episodes()->where('is_active', true)->exists())
+            @php $firstEp = $anime->episodes()->where('is_active', true)->first(); @endphp
+            <a href="{{ route('episode.watch', [$anime, $firstEp]) }}"
+               class="flex items-center justify-center gap-2 w-full py-2.5 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg text-sm transition-colors mb-3">
+                ▶ {{ __('Watch Now') }} · {{ $anime->episodes()->where('is_active', true)->count() }} {{ __('Episodes') }}
+            </a>
+            @endif
+
             {{-- Action buttons --}}
             @auth
             <div class="space-y-2 mb-4">
@@ -52,8 +67,8 @@
                 <form action="{{ route('favorites.store') }}" method="POST">
                     @csrf
                     <input type="hidden" name="anime_id" value="{{ $anime->id }}">
-                    <button type="submit" class="w-full py-2.5 border-2 {{ $isFavorited ? 'border-red-500 text-red-500 bg-red-50 dark:bg-red-900/20' : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300' }} font-semibold rounded-lg text-sm transition-colors hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                        {{ $isFavorited ? '❤ '.__('Favorited') : '♡ '.__('Add to Favorites') }}
+                    <button type="submit" class="w-full py-2.5 border-2 {{ $isFavorite ? 'border-red-500 text-red-500 bg-red-50 dark:bg-red-900/20' : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300' }} font-semibold rounded-lg text-sm transition-colors hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                        {{ $isFavorite ? '❤ '.__('Favorited') : '♡ '.__('Add to Favorites') }}
                     </button>
                 </form>
             </div>
@@ -68,6 +83,10 @@
                 <div class="flex justify-between">
                     <span class="text-gray-500 dark:text-gray-400">{{ __('Episodes') }}</span>
                     <span class="font-medium text-gray-900 dark:text-white">{{ $anime->episodes ?? '?' }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-500 dark:text-gray-400">{{ __('Seasons') }}</span>
+                    <span class="font-medium text-gray-900 dark:text-white">{{ $anime->seasons ?? '—' }}</span>
                 </div>
                 <div class="flex justify-between">
                     <span class="text-gray-500 dark:text-gray-400">{{ __('Duration') }}</span>

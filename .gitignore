@@ -30,3 +30,9 @@ Thumbs.db
 /database/*.sqlite
 /composer.lock
 /package-lock.json
+
+# Uploaded media (use object storage in production)
+/public/images/anime/
+/public/images/users/
+/public/images/studios/
+/public/images/genres/

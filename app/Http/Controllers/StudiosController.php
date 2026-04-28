@@ -111,10 +111,17 @@ class StudiosController extends Controller
 
     // ── Public ───────────────────────────────────────────────────────────────
 
-    public function studios()
+    public function studios(Request $request)
     {
-        $studios = Studio::with('photo')->withCount('animes')->orderByDesc('animes_count')->paginate(12);
-        return view('studios', compact('studios'));
+        $search  = $request->get('search');
+        $studios = Studio::with('photo')
+            ->withCount('animes')
+            ->when($search, fn ($q) => $q->where('name', 'ilike', "%{$search}%"))
+            ->orderByDesc('animes_count')
+            ->paginate(12)
+            ->withQueryString();
+
+        return view('studios', compact('studios', 'search'));
     }
 
     public function studio($id)

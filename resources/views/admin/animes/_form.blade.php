@@ -31,6 +31,10 @@
                 </select>
             </div>
             <div>
+                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">{{ __('Seasons') }}</label>
+                <input type="number" name="seasons" min="1" placeholder="—" value="{{ old('seasons', $anime->seasons ?? '') }}" class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-anime-500">
+            </div>
+            <div>
                 <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">{{ __('Episodes') }}</label>
                 <input type="number" name="episodes" min="0" value="{{ old('episodes', $anime->episodes ?? '') }}" class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-anime-500">
             </div>

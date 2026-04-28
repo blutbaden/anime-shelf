@@ -12,7 +12,7 @@ class Anime extends Model
     use HasFactory, Sluggable, AnimeTrait;
 
     protected $fillable = [
-        'title', 'title_japanese', 'type', 'episodes', 'episode_duration',
+        'title', 'title_japanese', 'type', 'episodes', 'seasons', 'episode_duration',
         'status', 'season', 'season_year', 'source', 'synopsis',
         'trailer_url', 'mal_id', 'aired_from', 'aired_to', 'rating',
         'language', 'meta_title', 'meta_description',
@@ -63,6 +63,11 @@ class Anime extends Model
     public function quotes(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Quote::class);
+    }
+
+    public function episodes(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Episode::class)->orderBy('number');
     }
 
     /** Favorites pivot */

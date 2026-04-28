@@ -29,7 +29,7 @@
 
     @foreach($animes as $anime)
     <url>
-        <loc>{{ url('/anime/'.$anime->id) }}</loc>
+        <loc>{{ url('/anime/' . ($anime->slug ?? $anime->id)) }}</loc>
         <lastmod>{{ $anime->updated_at->toAtomString() }}</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
@@ -38,7 +38,7 @@
 
     @foreach($studios as $studio)
     <url>
-        <loc>{{ url('/studio/'.$studio->id) }}</loc>
+        <loc>{{ url('/studio/' . ($studio->slug ?? $studio->id)) }}</loc>
         <lastmod>{{ $studio->updated_at->toAtomString() }}</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>

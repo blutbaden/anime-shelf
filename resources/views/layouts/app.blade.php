@@ -9,6 +9,21 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', config('app.name', 'Anime Shelf'))</title>
     <meta name="description" content="@yield('meta_description', 'Track your anime watch list, discover new series and movies.')">
+    <link rel="canonical" href="@yield('canonical', url()->current())">
+
+    {{-- Open Graph --}}
+    <meta property="og:site_name" content="{{ config('app.name') }}">
+    <meta property="og:type"      content="@yield('og_type', 'website')">
+    <meta property="og:url"       content="@yield('canonical', url()->current())">
+    <meta property="og:title"     content="@yield('og_title', config('app.name') . ' — Discover Anime')">
+    <meta property="og:description" content="@yield('meta_description', 'Track your anime watch list, discover new series and movies.')">
+    <meta property="og:image"     content="@yield('og_image', asset('images/og-default.png'))">
+
+    {{-- Twitter Card --}}
+    <meta name="twitter:card"        content="summary_large_image">
+    <meta name="twitter:title"       content="@yield('og_title', config('app.name') . ' — Discover Anime')">
+    <meta name="twitter:description" content="@yield('meta_description', 'Track your anime watch list, discover new series and movies.')">
+    <meta name="twitter:image"       content="@yield('og_image', asset('images/og-default.png'))">
 
     {{-- Fonts --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,7 +31,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
 
     {{-- CSS --}}
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     {{-- Alpine.js CDN --}}
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -56,7 +71,7 @@
                         <div x-show="open && results.length" class="absolute top-full left-0 mt-1 w-72 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-50 overflow-hidden">
                             <template x-for="item in results" :key="item.id">
                                 <a :href="item.url" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 transition autocomplete-item">
-                                    <img :src="item.image ? '/images/anime/'+item.image : '/images/default.png'" class="w-8 h-10 object-cover rounded">
+                                    <img :src="item.image ? '/images/anime/'+item.image : '/images/default.png'" :alt="item.title" class="w-8 h-10 object-cover rounded">
                                     <div>
                                         <p class="text-sm font-medium" x-text="item.title"></p>
                                         <p class="text-xs text-gray-500" x-text="item.studio + ' · ' + item.type"></p>
@@ -222,7 +237,6 @@
         </div>
     </footer>
 
-    <script src="{{ asset('js/app.js') }}"></script>
 
     <script>
         function searchAutocomplete() {

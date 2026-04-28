@@ -109,11 +109,21 @@
                                         <span class="text-xs bg-green-600 text-white px-1.5 py-0.5 rounded">● Live</span>
                                     @endif
                                 </div>
-                                @if($anime->average_rating)
-                                    <div class="absolute bottom-2 left-2 bg-black/70 text-yellow-400 text-xs font-bold px-1.5 py-0.5 rounded flex items-center gap-0.5">
-                                        ★ {{ number_format($anime->average_rating, 1) }}
+                                <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent px-2 pt-6 pb-2 flex items-end justify-between gap-1">
+                                    @if($anime->average_rating)
+                                        <span class="text-yellow-400 text-xs font-bold">★ {{ number_format($anime->average_rating, 1) }}</span>
+                                    @else
+                                        <span></span>
+                                    @endif
+                                    <div class="flex items-center gap-1 text-white text-xs font-semibold">
+                                        @if($anime->seasons > 1)
+                                            <span class="bg-white/20 backdrop-blur-sm px-1.5 py-0.5 rounded">{{ $anime->seasons }}S</span>
+                                        @endif
+                                        @if($anime->episodes)
+                                            <span class="bg-white/20 backdrop-blur-sm px-1.5 py-0.5 rounded">{{ $anime->episodes }} {{ __('eps') }}</span>
+                                        @endif
                                     </div>
-                                @endif
+                                </div>
                             </div>
                             <p class="text-sm font-semibold text-gray-900 dark:text-white truncate group-hover:text-anime-600 dark:group-hover:text-anime-400 transition-colors">{{ $anime->title }}</p>
                             <p class="text-xs text-gray-500 dark:text-gray-400">{{ $anime->studio?->name ?? '—' }} · {{ $anime->season_year }}</p>

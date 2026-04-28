@@ -1,2 +1,10 @@
 User-agent: *
-Disallow:
+Allow: /
+Disallow: /admin/
+Disallow: /account/
+Disallow: /user/
+Disallow: /watch-list
+Disallow: /watch-history
+Disallow: /favorites
+
+Sitemap: https://anime-shelf.com/sitemap.xml

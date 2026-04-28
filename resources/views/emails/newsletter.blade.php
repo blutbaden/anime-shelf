@@ -18,7 +18,7 @@
         <h1>🎌 AnimeShelf Newsletter</h1>
     </div>
     <div class="body">
-        {!! $content ?? '' !!}
+        {!! strip_tags($content ?? '', '<p><br><b><strong><i><em><u><a><ul><ol><li><h1><h2><h3><h4><img><span><div>') !!}
     </div>
     <div class="footer">
         <p>You're receiving this because you subscribed to AnimeShelf.</p>
