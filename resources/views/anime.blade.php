@@ -215,6 +215,66 @@
             </div>
             @endif
 
+            {{-- Series / Episodes --}}
+            @if($episodesBySeries->count())
+            <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden"
+                 x-data="{ activeSeries: {{ $episodesBySeries->keys()->first() }} }">
+
+                {{-- Series tabs --}}
+                <div class="flex overflow-x-auto border-b border-gray-200 dark:border-gray-700 scrollbar-none">
+                    @foreach($episodesBySeries as $seriesNum => $episodes)
+                    <button
+                        @click="activeSeries = {{ $seriesNum }}"
+                        :class="activeSeries === {{ $seriesNum }}
+                            ? 'border-b-2 border-anime-500 text-anime-600 dark:text-anime-400 font-semibold bg-anime-50 dark:bg-anime-900/20'
+                            : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/30'"
+                        class="shrink-0 px-5 py-3.5 text-sm transition-colors whitespace-nowrap">
+                        {{ __('Series') }} {{ $seriesNum }}
+                        <span class="ml-1.5 text-xs px-1.5 py-0.5 rounded-full"
+                              :class="activeSeries === {{ $seriesNum }} ? 'bg-anime-100 dark:bg-anime-900/40 text-anime-700 dark:text-anime-300' : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400'">
+                            {{ $episodes->count() }}
+                        </span>
+                    </button>
+                    @endforeach
+                </div>
+
+                {{-- Episode grids per series --}}
+                @foreach($episodesBySeries as $seriesNum => $episodes)
+                <div x-show="activeSeries === {{ $seriesNum }}" x-transition class="p-4">
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                        @foreach($episodes as $ep)
+                        <a href="{{ route('episode.watch', [$anime, $ep]) }}"
+                           class="group relative flex flex-col rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 hover:border-anime-400 dark:hover:border-anime-500 transition-colors bg-gray-50 dark:bg-gray-700/50 hover:bg-anime-50 dark:hover:bg-anime-900/10">
+                            {{-- Thumbnail placeholder with play icon --}}
+                            <div class="relative aspect-video bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                                @if($anime->photo)
+                                    <img src="{{ asset('storage/'.$anime->photo->file) }}" alt="" class="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity">
+                                @endif
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <div class="w-9 h-9 rounded-full bg-black/50 group-hover:bg-anime-500 flex items-center justify-center transition-colors">
+                                        <svg class="w-4 h-4 text-white ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                    </div>
+                                </div>
+                                @if($ep->duration)
+                                    <span class="absolute bottom-1.5 right-1.5 text-xs bg-black/70 text-white px-1.5 py-0.5 rounded">{{ $ep->duration }}m</span>
+                                @endif
+                            </div>
+                            {{-- Info --}}
+                            <div class="p-2.5">
+                                <p class="text-xs font-bold text-anime-600 dark:text-anime-400">{{ __('Ep') }} {{ $ep->number }}</p>
+                                @if($ep->title)
+                                    <p class="text-xs text-gray-700 dark:text-gray-300 mt-0.5 line-clamp-2 leading-snug">{{ $ep->title }}</p>
+                                @endif
+                            </div>
+                        </a>
+                        @endforeach
+                    </div>
+                </div>
+                @endforeach
+
+            </div>
+            @endif
+
             {{-- Reviews --}}
             <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5">
                 <h2 class="font-bold text-gray-900 dark:text-white mb-4">{{ __('Reviews') }} ({{ $anime->reviews->where('parent_id', null)->where('is_active', true)->count() }})</h2>

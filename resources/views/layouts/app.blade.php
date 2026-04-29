@@ -35,6 +35,7 @@
 
     {{-- Alpine.js CDN --}}
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastr@2.1.4/build/toastr.min.css">
 
     @stack('head')
 </head>
@@ -174,20 +175,7 @@
         </div>
     </nav>
 
-    {{-- ── Flash messages ──────────────────────────────────────────────────────── --}}
-    @if(session('success'))
-        <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 4000)"
-            class="fixed bottom-6 right-6 z-50 bg-green-500 text-white px-5 py-3 rounded-xl shadow-lg flex items-center gap-2 text-sm font-medium">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-            {{ session('success') }}
-        </div>
-    @endif
-    @if($errors->any())
-        <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 6000)"
-            class="fixed bottom-6 right-6 z-50 bg-red-500 text-white px-5 py-3 rounded-xl shadow-lg text-sm font-medium max-w-xs">
-            <ul>@foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach</ul>
-        </div>
-    @endif
+    {{-- Flash messages handled by Toastr (see bottom of body) --}}
 
     {{-- ── Page content ────────────────────────────────────────────────────────── --}}
     <main class="flex-1">
@@ -254,6 +242,20 @@
         }
     </script>
 
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/toastr@2.1.4/build/toastr.min.js"></script>
+    <script>
+    toastr.options = { positionClass: 'toast-top-right', timeOut: 4000, progressBar: true, closeButton: true, newestOnTop: true };
+    @if(session('success')) toastr.success(@json(session('success'))); @endif
+    @if(session('error'))   toastr.error(@json(session('error')));     @endif
+    @if(session('warning')) toastr.warning(@json(session('warning'))); @endif
+    @if(session('info'))    toastr.info(@json(session('info')));       @endif
+    @if($errors->any())
+        @foreach($errors->all() as $error)
+            toastr.error(@json($error));
+        @endforeach
+    @endif
+    </script>
     @stack('scripts')
 </body>
 </html>

@@ -17,14 +17,17 @@ class EpisodeController extends Controller
 
     public function create(Anime $anime)
     {
-        $next = ($anime->episodes()->max('number') ?? 0) + 1;
+        $series   = request()->integer('series', 1) ?: 1;
+        $next     = ($anime->episodes()->where('series', $series)->max('number') ?? 0) + 1;
+        $maxSeries = ($anime->episodes()->max('series') ?? 1);
 
-        return view('admin.episodes.create', compact('anime', 'next'));
+        return view('admin.episodes.create', compact('anime', 'next', 'series', 'maxSeries'));
     }
 
     public function store(Request $request, Anime $anime)
     {
         $data = $request->validate([
+            'series'      => 'required|integer|min:1',
             'number'      => 'required|integer|min:1',
             'title'       => 'nullable|string|max:255',
             'url'         => 'required|url|max:2048',
@@ -34,7 +37,7 @@ class EpisodeController extends Controller
         ]);
 
         $anime->episodes()->updateOrCreate(
-            ['number' => $data['number']],
+            ['series' => $data['series'], 'number' => $data['number']],
             $data + ['is_active' => $request->boolean('is_active', true)],
         );
 
@@ -50,6 +53,7 @@ class EpisodeController extends Controller
     public function update(Request $request, Anime $anime, Episode $episode)
     {
         $data = $request->validate([
+            'series'      => 'required|integer|min:1',
             'number'      => 'required|integer|min:1',
             'title'       => 'nullable|string|max:255',
             'url'         => 'required|url|max:2048',
@@ -77,13 +81,15 @@ class EpisodeController extends Controller
     {
         abort_unless($episode->is_active && $episode->anime_id === $anime->id, 404);
 
-        $prev = $anime->episodes()->where('number', '<', $episode->number)->where('is_active', true)->max('number');
-        $next = $anime->episodes()->where('number', '>', $episode->number)->where('is_active', true)->min('number');
+        $base = $anime->episodes()->where('series', $episode->series)->where('is_active', true);
 
-        $prevEpisode = $prev ? $anime->episodes()->where('number', $prev)->first() : null;
-        $nextEpisode = $next ? $anime->episodes()->where('number', $next)->first() : null;
+        $prev = (clone $base)->where('number', '<', $episode->number)->max('number');
+        $next = (clone $base)->where('number', '>', $episode->number)->min('number');
 
-        $allEpisodes = $anime->episodes()->where('is_active', true)->get();
+        $prevEpisode = $prev ? (clone $base)->where('number', $prev)->first() : null;
+        $nextEpisode = $next ? (clone $base)->where('number', $next)->first() : null;
+
+        $allEpisodes = $anime->episodes()->where('is_active', true)->orderBy('series')->orderBy('number')->get();
 
         return view('watch', compact('anime', 'episode', 'prevEpisode', 'nextEpisode', 'allEpisodes'));
     }

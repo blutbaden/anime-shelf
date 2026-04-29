@@ -124,8 +124,9 @@ class AnimeController extends Controller
 
     public function show($id)
     {
-        $anime = Anime::with(['photo', 'studio', 'genres', 'tags', 'reviews'])->findOrFail($id);
-        return view('admin.animes.show', compact('anime'));
+        $anime = Anime::with(['photo', 'studio', 'genres', 'tags', 'reviews', 'favoritedByUsers'])->findOrFail($id);
+        $episodesBySeries = $anime->episodes()->orderBy('series')->orderBy('number')->get()->groupBy('series');
+        return view('admin.animes.show', compact('anime', 'episodesBySeries'));
     }
 
     public function edit($id)
@@ -322,10 +323,17 @@ class AnimeController extends Controller
 
         $anime->increment('views');
 
+        $episodesBySeries = $anime->episodes()
+            ->where('is_active', true)
+            ->orderBy('series')
+            ->orderBy('number')
+            ->get()
+            ->groupBy('series');
+
         return view('anime', compact(
             'anime', 'reviews', 'isFavorite', 'inWatchList',
             'watchStatus', 'shelfEntry', 'hasCompleted', 'userReview',
-            'related', 'sort', 'ratingDist', 'ratingTotal'
+            'related', 'sort', 'ratingDist', 'ratingTotal', 'episodesBySeries'
         ));
     }
 

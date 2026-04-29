@@ -10,7 +10,14 @@
     <form method="POST" action="{{ route('episodes.store', $anime) }}" class="space-y-5">
         @csrf
 
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-3 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('Series #') }} <span class="text-red-500">*</span></label>
+                <input type="number" name="series" value="{{ old('series', $series) }}" min="1" required
+                       class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white px-3 py-2 text-sm focus:ring-2 focus:ring-anime-500 focus:border-transparent">
+                <p class="text-xs text-gray-400 mt-1">{{ __('Max existing: :n', ['n' => $maxSeries]) }}</p>
+                @error('series')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+            </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('Episode #') }} <span class="text-red-500">*</span></label>
                 <input type="number" name="number" value="{{ old('number', $next) }}" min="1" required

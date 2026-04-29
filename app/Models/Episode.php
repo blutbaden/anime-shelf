@@ -7,11 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 class Episode extends Model
 {
     protected $fillable = [
-        'anime_id', 'number', 'title', 'url', 'description', 'duration', 'is_active',
+        'anime_id', 'series', 'number', 'title', 'url', 'description', 'duration', 'is_active',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
+        'series'    => 'integer',
         'number'    => 'integer',
         'duration'  => 'integer',
     ];

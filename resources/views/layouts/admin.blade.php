@@ -5,8 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Admin') — {{ config('app.name') }}</title>
-    <link rel="stylesheet" href="{{ mix('css/app.css') }}">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastr@2.1.4/build/toastr.min.css">
 </head>
 <body class="h-full bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
 
@@ -107,26 +108,6 @@
             </div>
         </header>
 
-        {{-- Flash messages --}}
-        @if(session('success') || session('error'))
-            <div class="px-6 pt-4">
-                @if(session('success'))
-                    <div x-data="{show:true}" x-show="show" x-init="setTimeout(()=>show=false,4000)"
-                         class="flex items-center gap-2 bg-green-100 dark:bg-green-900/30 border border-green-300 dark:border-green-700 text-green-800 dark:text-green-300 rounded-lg px-4 py-3 text-sm">
-                        <svg class="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-                        {{ session('success') }}
-                    </div>
-                @endif
-                @if(session('error'))
-                    <div x-data="{show:true}" x-show="show" x-init="setTimeout(()=>show=false,5000)"
-                         class="flex items-center gap-2 bg-red-100 dark:bg-red-900/30 border border-red-300 dark:border-red-700 text-red-800 dark:text-red-300 rounded-lg px-4 py-3 text-sm">
-                        <svg class="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/></svg>
-                        {{ session('error') }}
-                    </div>
-                @endif
-            </div>
-        @endif
-
         {{-- Content --}}
         <main class="flex-1 overflow-y-auto p-6">
             @yield('content')
@@ -134,7 +115,20 @@
     </div>
 </div>
 
-<script src="{{ mix('js/app.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/toastr@2.1.4/build/toastr.min.js"></script>
+<script>
+toastr.options = { positionClass: 'toast-top-right', timeOut: 4000, progressBar: true, closeButton: true, newestOnTop: true };
+@if(session('success')) toastr.success(@json(session('success'))); @endif
+@if(session('error'))   toastr.error(@json(session('error')));     @endif
+@if(session('warning')) toastr.warning(@json(session('warning'))); @endif
+@if(session('info'))    toastr.info(@json(session('info')));       @endif
+@if($errors->any())
+    @foreach($errors->all() as $error)
+        toastr.error(@json($error));
+    @endforeach
+@endif
+</script>
 @stack('scripts')
 </body>
 </html>

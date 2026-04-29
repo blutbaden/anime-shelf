@@ -6,7 +6,10 @@
 <div class="max-w-4xl">
     <div class="flex items-center justify-between mb-5">
         <a href="{{ route('animes.index') }}" class="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">← {{ __('Back') }}</a>
-        <a href="{{ route('animes.edit', $anime->id) }}" class="px-4 py-2 bg-anime-600 hover:bg-anime-700 text-white rounded-lg text-sm font-semibold">{{ __('Edit') }}</a>
+        <div class="flex gap-2">
+            <a href="{{ route('episodes.create', $anime->id) }}" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-semibold">+ {{ __('Add Episode') }}</a>
+            <a href="{{ route('animes.edit', $anime->id) }}" class="px-4 py-2 bg-anime-600 hover:bg-anime-700 text-white rounded-lg text-sm font-semibold">{{ __('Edit') }}</a>
+        </div>
     </div>
 
     <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
@@ -45,6 +48,49 @@
                 <div class="text-xs text-gray-500 dark:text-gray-400">{{ __('Avg Rating') }}</div>
             </div>
         </div>
+    </div>
+
+    {{-- Episodes --}}
+    <div class="mt-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-gray-700">
+            <h2 class="font-semibold text-gray-900 dark:text-white">
+                {{ __('Episodes') }}
+                <span class="ml-2 text-sm font-normal text-gray-400">({{ $episodesBySeries->flatten()->count() }} {{ __('total') }})</span>
+            </h2>
+            <div class="flex gap-2">
+                <a href="{{ route('episodes.index', $anime->id) }}" class="text-xs text-gray-500 dark:text-gray-400 hover:underline">{{ __('Manage all') }} →</a>
+                <a href="{{ route('episodes.create', $anime->id) }}" class="px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white rounded-lg text-xs font-semibold">+ {{ __('Add Episode') }}</a>
+            </div>
+        </div>
+
+        @if($episodesBySeries->isEmpty())
+            <div class="px-5 py-10 text-center text-gray-400 dark:text-gray-500 text-sm">
+                {{ __('No episodes yet.') }}
+                <a href="{{ route('episodes.create', $anime->id) }}" class="ml-1 text-green-600 hover:underline">{{ __('Add the first one') }}</a>
+            </div>
+        @else
+            @foreach($episodesBySeries as $seriesNum => $episodes)
+                <div class="px-5 py-3 border-b border-gray-50 dark:border-gray-700/50 last:border-0">
+                    <p class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">
+                        {{ __('Series') }} {{ $seriesNum }} · {{ $episodes->count() }} {{ __('episodes') }}
+                        <a href="{{ route('episodes.create', ['anime' => $anime->id, 'series' => $seriesNum]) }}" class="ml-3 text-green-500 hover:text-green-700 normal-case font-medium">+ {{ __('Add to this series') }}</a>
+                    </p>
+                    <div class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-2">
+                        @foreach($episodes as $ep)
+                            <a href="{{ route('episodes.edit', [$anime->id, $ep->id]) }}"
+                               class="flex flex-col items-center justify-center p-2 rounded-lg border text-center transition-colors
+                                      {{ $ep->is_active ? 'border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20 hover:bg-green-100' : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/30 hover:bg-gray-100 dark:hover:bg-gray-700 opacity-60' }}"
+                               title="{{ $ep->title ?: 'Episode '.$ep->number }}">
+                                <span class="text-xs font-bold text-gray-700 dark:text-gray-200">{{ $ep->number }}</span>
+                                @if($ep->duration)
+                                    <span class="text-[10px] text-gray-400">{{ $ep->duration }}m</span>
+                                @endif
+                            </a>
+                        @endforeach
+                    </div>
+                </div>
+            @endforeach
+        @endif
     </div>
 </div>
 @endsection
