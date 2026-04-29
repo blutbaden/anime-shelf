@@ -4,21 +4,20 @@
 
 @section('content')
 <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-6">📊 {{ __('My Anime Stats') }}</h1>
+    <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-6">{{ __('My Anime Stats') }}</h1>
 
     {{-- Overview cards --}}
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
         @php
             $cards = [
-                ['label' => __('Completed'),     'value' => $totalCompleted,                          'icon' => '✅'],
-                ['label' => __('Watching'),       'value' => $shelfCounts['watching'] ?? 0,            'icon' => '▶️'],
-                ['label' => __('Plan to Watch'),  'value' => $shelfCounts['plan_to_watch'] ?? 0,       'icon' => '📋'],
-                ['label' => __('Episodes Seen'),  'value' => number_format($totalEpisodes),             'icon' => '🎬'],
+                ['label' => __('Completed'),     'value' => $totalCompleted],
+                ['label' => __('Watching'),       'value' => $shelfCounts['watching'] ?? 0],
+                ['label' => __('Plan to Watch'),  'value' => $shelfCounts['plan_to_watch'] ?? 0],
+                ['label' => __('Episodes Seen'),  'value' => number_format($totalEpisodes)],
             ];
         @endphp
         @foreach($cards as $card)
             <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-5 text-center">
-                <div class="text-3xl mb-2">{{ $card['icon'] }}</div>
                 <div class="text-3xl font-extrabold text-gray-900 dark:text-white">{{ $card['value'] }}</div>
                 <div class="text-xs text-gray-500 dark:text-gray-400 mt-1 font-medium">{{ $card['label'] }}</div>
             </div>
@@ -29,7 +28,7 @@
 
         {{-- Watch Goal --}}
         <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6">
-            <h2 class="font-bold text-gray-900 dark:text-white mb-4">🎯 {{ __('Yearly Goal') }} ({{ $currentYear }})</h2>
+            <h2 class="font-bold text-gray-900 dark:text-white mb-4">{{ __('Yearly Goal') }} ({{ $currentYear }})</h2>
 
             @if($goalTarget > 0)
                 <div class="mb-4">
@@ -41,7 +40,7 @@
                         <div class="h-full bg-anime-500 rounded-full transition-all duration-500" style="width:{{ $goalPct }}%"></div>
                     </div>
                     @if($goalPct >= 100)
-                        <p class="text-green-600 dark:text-green-400 font-semibold text-sm mt-2">🎉 {{ __('Goal reached!') }}</p>
+                        <p class="text-green-600 dark:text-green-400 font-semibold text-sm mt-2">{{ __('Goal reached!') }}</p>
                     @endif
                 </div>
             @else
@@ -61,7 +60,7 @@
         {{-- Favorite genres --}}
         @if(!empty($genreCounts))
         <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6">
-            <h2 class="font-bold text-gray-900 dark:text-white mb-4">🎭 {{ __('Top Genres') }}</h2>
+            <h2 class="font-bold text-gray-900 dark:text-white mb-4">{{ __('Top Genres') }}</h2>
             <div class="space-y-3">
                 @php $maxGenre = max($genreCounts) ?: 1; @endphp
                 @foreach(array_slice($genreCounts, 0, 6, true) as $name => $count)
@@ -83,7 +82,7 @@
         {{-- Monthly completed --}}
         @if($monthlyCompleted->count())
         <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6 lg:col-span-2">
-            <h2 class="font-bold text-gray-900 dark:text-white mb-4">📅 {{ __('Monthly Activity') }}</h2>
+            <h2 class="font-bold text-gray-900 dark:text-white mb-4">{{ __('Monthly Activity') }}</h2>
             <div class="flex items-end gap-2 h-32">
                 @php $maxVal = $monthlyCompleted->max('total') ?: 1; @endphp
                 @foreach($monthlyCompleted as $row)
@@ -100,7 +99,7 @@
 
         {{-- Extra stats --}}
         <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6">
-            <h2 class="font-bold text-gray-900 dark:text-white mb-4">📝 {{ __('More Stats') }}</h2>
+            <h2 class="font-bold text-gray-900 dark:text-white mb-4">{{ __('More Stats') }}</h2>
             <div class="space-y-3 text-sm">
                 <div class="flex justify-between">
                     <span class="text-gray-500 dark:text-gray-400">{{ __('Reviews written') }}</span>
